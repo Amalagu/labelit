@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% extends "base/base.html" %}
+
+{% block content %}
+
+    <!-- Main Section -->
+    <main class="formPage my-xl">
+        <div class="content-box">
+            <div class="formWrapper">
+                <a class="backButton" href="#"><i class="im im-angle-left"></i></a>
+                <br>
+
+                <form class="form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+
+                    <div class="form__field">
+                        <label for="formInput#text">{{field.label}}</label>
+                        {{field}}
+                    </div>
+                    {% endfor %}
+
+                    <div class="form__field">
+                        {% for annotator in project.annotators.all %}
+                        <div class="project-tag tag tag--pill tag--main" data-tag="{{annotator.id}}"
+                            data-project="{{project.id}}">{{annotator.name}} &#215;</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form__field">
+                        <label for="formInput#image">Project Images</label>
+                        <input  type="file" multiple class="input" name="images" >
+                    </div>
+
+                    <div class="form__field">
+                        <label for="formInput#text">Annotators</label>
+                        <textarea class="input" name="annotators" placeholder="Add annotator emails here..."></textarea>
+                    </div>
+                    <input class="btn btn--sub btn--lg  my-md" type="submit" value="Submit" />
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}
