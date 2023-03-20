@@ -177,7 +177,7 @@ def createProject(request):
 
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
-            project = form.save(commit=False)
+            project = form.save()
             for annotator in annotators:
                 try:
                     annotator = Profile.objects.get(email=annotator)

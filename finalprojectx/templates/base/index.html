@@ -24,7 +24,13 @@
       </div>
     </section>
     <!-- Search Result: DevList -->
+
     <section class="devlist">
+      <div class="container container--narrow">
+        <div class="hero-section__box">
+        <h2>CREATED PROJECTS</h2>
+      </div>
+      </div>
       <div class="container">
         <div class="grid grid--three">
           {% for project in projects %}
@@ -53,8 +59,47 @@
             </div>
           </div>
           {% endfor %}
+
         </div>
       </div>
+      <!-- Assigned projects begin -->
+      <div class="container container--narrow">
+        <div class="hero-section__box">
+        <h2>ASSIGNED PROJECTS</h2>
+      </div>
+      </div>
+        <div class="container">
+        <div class="grid grid--three">
+          {% for project in annotationprojects %}
+          <div class="column card">
+            <div class="dev">
+              <a href="{% url 'project' project.id %}" class="card__body">
+                <div class="dev__profile">
+                  <img class="avatar avatar--md" src="{{project.project_display_picture.url}}" alt="image" />
+                  <div class="dev__meta">
+                    <h3>{{project.title}}</h3>
+                    <h5>Project By {{project.manager}}</h5>
+                  </div>
+                </div>
+                <p class="dev__info">
+                  {{project.description}}
+                </p>
+                <div class="dev__skills">
+                  {% for annotator in project.annotators.all %}
+                  <span class="tag tag--pill tag--main">
+                    <small>{{annotator}}</small>
+                  </span>
+                  {% endfor %}
+
+                </div>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+      <!-- Assigned projects ends -->
     </section>
 
     <div class="pagination">
