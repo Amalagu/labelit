@@ -106,8 +106,16 @@ def projectimages(request, pk):
 
 @login_required(login_url='login')
 def singleimages(request, pk):
+    email = request.user.profile.email
     image = ImageSample.objects.get(id=pk)
-    context = {'image':image}
+    imagedict = image.imagedata[email].items() or {"Texture":' ', "Gradient":'', "Age":' ', "Other Symptoms":''}
+    if request.method == 'POST':
+        for x,y in imagedict:
+            value = request.POST.get(x)
+            image.imagedata[email][x] = value
+        image.save()
+        return redirect('index-view')
+    context = {'image':image, 'imagedata': imagedict}
     return render(request, 'label/single-image.html', context)
 
 @login_required(login_url='login')
@@ -133,20 +141,22 @@ def updateProject(request, pk):
     if request.method == 'POST':
         annotators = request.POST.get('annotators').replace(',',  " ").split()
         images = request.FILES.getlist('images')
+        initial_image_data = {}
 
 
         form = ProjectForm(request.POST, request.FILES, instance=project)
         if form.is_valid():
             project = form.save()
-            for annotator in annotators:
+            for annotator_email in annotators:
                 try:
-                    annotator = Profile.objects.get(email=annotator)
+                    annotator = Profile.objects.get(email=annotator_email)
                     project.annotators.add(annotator)
+                    initial_image_data[annotator_email] = {"Texture":' ', "Gradient":'', "Age":' ', "Other Symptoms":''}
                 except:
                     pass
             for image in images:
                 try:
-                    new_image = ImageSample.objects.create(featured_image=image)
+                    new_image = ImageSample.objects.create(featured_image=image, imagedata=initial_image_data)
                     project.featured_image.add(new_image)
                 except:
                     pass

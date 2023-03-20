@@ -24,11 +24,11 @@
             <form class="form" method="POST">
               {% csrf_token %}
                     <!-- Input:Text -->
-              {% for label in image.imagelabel.all %}
+              {% for x, y in imagedata %}
                     <div class="form__field">
-                        <label for="formInput#text">{{label.name}} </label>
-                        <input class="input input--text" id="formInput#text" type="text" name="text"
-                            placeholder="{{label.value}}" />
+                        <label for="formInput#text">{{x}} </label>
+                        <input class="input input--text" id="formInput#text" type="text" name="{{x}}"
+                            placeholder="{{y}}" />
                     </div>
               {% endfor %}
                     <input class="btn btn--sub btn--lg  my-md" type="submit" value="Submit" />
@@ -48,11 +48,7 @@
 
             <br />
             <br />
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic voluptates earum possimus a perferendis culpa
-            omnis, libero quae soluta, obcaecati amet. Quam earum ad qui reprehenderit eligendi porro ab possimus
-            fugit voluptatem rerum eius sapiente, nemo mollitia aperiam suscipit culpa corrupti officiis dicta soluta
-            ut similique! Iste soluta quae tempora alias assumenda? Nam nesciunt nihil enim tempore cum quo
-            architecto?
+            {{image.imagedata}}
           </div>
 
           <div class="comments">

@@ -1,5 +1,7 @@
+from picklefield.fields import PickledObjectField
 from django.db import models
 import uuid
+
 
 from django.db.models.deletion import CASCADE
 from users.models import Profile
@@ -20,8 +22,8 @@ class ImageSample(models.Model):
     imagelabel = models.ManyToManyField('ImageLabel', blank=True)
     featured_image = models.ImageField(
         null=True, blank=True, upload_to='project_images/', default='project_images/default.jpg')
-    #featured_image = models.ImageField(
-    #    null=True, blank=True, default="default.jpg")
+    imagedata = PickledObjectField(default = dict)
+
     def __str__(self):
         return self.label
 
