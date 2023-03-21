@@ -21,6 +21,7 @@
         <div class="column column--1of3">
           <h3 class="singleProject__subtitle">Fill Form To Label Image</h3>
           <div class="singleProject__toolStack">
+
             <form class="form" method="POST">
               {% csrf_token %}
                     <!-- Input:Text -->
@@ -33,13 +34,14 @@
               {% endfor %}
                     <input class="btn btn--sub btn--lg  my-md" type="submit" value="Submit" />
                 </form>
+
           </div>
           <a class="singleProject__liveLink" href="#" target="_blank"><i class="im im-external-link"></i>Source Code
           </a>
         </div>
         <div class="column column--2of3">
-          <img class="singleProject__preview" src="images/project-c.png" alt="portfolio thumbnail" />
-          <a href="profile.html" class="singleProject__developer">Md. Shahriar Parvez</a>
+          <img class="singleProject__preview" src="{{image.featured_image.url}}" alt="portfolio thumbnail" />
+          <!-- <a href="profile.html" class="singleProject__developer">Md. Shahriar Parvez</a> -->
           <h2 class="singleProject__title">{{image.label}}</h2>
           <h3 class="singleProject__subtitle">About the Project</h3>
           <div class="singleProject__info">

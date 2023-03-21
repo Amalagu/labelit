@@ -54,7 +54,7 @@
             {% for project in profile.project_set.all %}
             <tr>
               <td class="settings__thumbnail">
-                <a href="single-project.html"><img src="{{project.project_display_picture.url}}" alt="Project Thumbnail" /></a>
+                <a href="{% url 'project' project.id %}"><img src="{{project.project_display_picture.url}}" alt="Project Thumbnail" /></a>
               </td>
               <td class="settings__tableInfo">
                 <a href="single-project.html">{{project.title}}</a>

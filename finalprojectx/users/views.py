@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.views import generic
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from .models import Profile
 from .forms import CustomUserCreationForm, AuthForm, ProjectForm
 from label.models import Project, ImageSample
@@ -102,7 +102,10 @@ def index(request):
 def projectimages(request, pk):
     project = Project.objects.get(id=pk)
     context = {'project':project}
-    return render(request, 'label/project-images.html', context)
+    if request.user.profile == project.manager:
+        return render(request, 'label/managersview-project-images.html', context)
+    else:
+        return render(request, 'label/project-images.html', context)
 
 @login_required(login_url='login')
 def singleimages(request, pk):
@@ -117,6 +120,15 @@ def singleimages(request, pk):
         return redirect('index-view')
     context = {'image':image, 'imagedata': imagedict}
     return render(request, 'label/single-image.html', context)
+
+@login_required(login_url='login')
+def managersingleimageview(request, pk):
+    image = ImageSample.objects.get(id=pk)
+    imagedict = image.imagedata
+    context = {'image':image, 'imagedata': imagedict}
+    return render(request, 'label/managersingle-image.html', context)
+
+
 
 @login_required(login_url='login')
 def labelimage(request, pk):
@@ -173,21 +185,24 @@ def createProject(request):
     if request.method == 'POST':
         annotators = request.POST.get('annotators').replace(',',  " ").split()
         images = request.FILES.getlist('images')
+        initial_image_data = {}
 
 
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             project = form.save()
-            for annotator in annotators:
+            for annotator_email in annotators:
                 try:
-                    annotator = Profile.objects.get(email=annotator)
+                    annotator = Profile.objects.get(email=annotator_email)
                     project.annotators.add(annotator)
+                    initial_image_data[annotator_email] = {"Texture":' ', "Gradient":'', "Age":' ', "Other Symptoms":''}
                 except:
                     pass
             for image in images:
                 try:
-                    new_image = ImageSample.objects.create(featured_image=image)
+                    new_image = ImageSample.objects.create(featured_image=image, imagedata=initial_image_data)
                     project.featured_image.add(new_image)
+                    project.save()
                 except:
                     pass
             project.manager=profile

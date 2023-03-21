@@ -13,6 +13,7 @@ urlpatterns = [
     path('register/', views.registerUser, name="register"),
     path('', views.index, name='index-view'),
     path('image/<str:pk>/', views.singleimages, name="image"),
+    path('manager-image/<str:pk>/', views.managersingleimageview, name="managersingleimage"),
     path('account/', views.useraccount, name= 'account'),
 
     path('project/<str:pk>/', views.projectimages, name="project"),
