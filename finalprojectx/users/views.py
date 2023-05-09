@@ -8,6 +8,7 @@ from .models import Profile
 from .forms import CustomUserCreationForm, AuthForm, ProjectForm
 from label.models import Project, ImageSample
 from django.contrib import messages
+from django.db.models import Q
 
 # Create your views here.
 def loginUser(request):
@@ -83,16 +84,20 @@ def logoutUser(request):
 
 
 
-#@login_required(login_url = 'login')
+@login_required(login_url = 'login')
 def index(request):
+    search_key = ''
+    if request.GET.get("search_key"):
+    	search_key = request.GET.get("search_key")
     context = {}
     if hasattr(request.user, 'profile'):
         #if request.user.profile:
+        profiles = Profile.objects.filter(username__iexact = search_key)
         profile = request.user.profile
-        projects = profile.project_set.all()
-        annotationprojects = profile.annotationprojects.all()
+        projects = profile.project_set.distinct().filter(Q(title__icontains=search_key) | Q(description__icontains =search_key) | Q(annotators__username__icontains=search_key))
+        annotationprojects = profile.annotationprojects.distinct().filter(Q(title__icontains=search_key) | Q(description__icontains =search_key) | Q(annotators__username__icontains=search_key) )
         #projects = projects.union(annotationprojects)
-        context = {"projects": projects, 'annotationprojects': annotationprojects}
+        context = {"projects": projects, 'annotationprojects': annotationprojects, 'searchkey':search_key}
     else:
         pass
     #print(dir(request.user.profile))

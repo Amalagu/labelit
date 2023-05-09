@@ -26,7 +26,9 @@ class ImageSample(models.Model):
 
     def __str__(self):
         return self.label
-
+        
+    class Meta:
+    	ordering = ['-uploaded']
 
 
 class Project(models.Model):
@@ -50,7 +52,7 @@ class Project(models.Model):
         return self.title
 
     class Meta:
-        ordering = [ 'created', 'title']
+        ordering = [ '-created', 'title']
 
     """@property
     def imageURL(self):
