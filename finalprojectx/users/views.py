@@ -2,13 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
+from django.contrib import messages
+
 from django.views import generic
 from django.http import HttpResponseRedirect, HttpResponse
+
+from .utils import projectsearch, pagerfunction
 from .models import Profile
 from .forms import CustomUserCreationForm, AuthForm, ProjectForm
 from label.models import Project, ImageSample
-from django.contrib import messages
-from django.db.models import Q
+
 
 # Create your views here.
 def loginUser(request):
@@ -86,27 +89,18 @@ def logoutUser(request):
 
 @login_required(login_url = 'login')
 def index(request):
-    search_key = ''
-    if request.GET.get("search_key"):
-    	search_key = request.GET.get("search_key")
-    context = {}
-    if hasattr(request.user, 'profile'):
-        #if request.user.profile:
-        profiles = Profile.objects.filter(username__iexact = search_key)
         profile = request.user.profile
-        projects = profile.project_set.distinct().filter(Q(title__icontains=search_key) | Q(description__icontains =search_key) | Q(annotators__username__icontains=search_key))
-        annotationprojects = profile.annotationprojects.distinct().filter(Q(title__icontains=search_key) | Q(description__icontains =search_key) | Q(annotators__username__icontains=search_key) )
-        #projects = projects.union(annotationprojects)
-        context = {"projects": projects, 'annotationprojects': annotationprojects, 'searchkey':search_key}
-    else:
-        pass
-    #print(dir(request.user.profile))
-    return render(request, 'base/index.html', context)
+        projects, annotationprojects, search_key = projectsearch(request, profile)
+        pagedprojects, pages, page = pagerfunction(request, projects, 1)
+        context = {"projects": pagedprojects, 'annotationprojects': annotationprojects, 'searchkey':search_key, 'pages':pages, 'page': int(page) }
+        return render(request, 'base/index.html', context)
 
 @login_required(login_url='login')
 def projectimages(request, pk):
     project = Project.objects.get(id=pk)
-    context = {'project':project}
+    images = project.featured_image.all()
+    pagedimages, pages, page = pagerfunction(request, images, 2)
+    context = {'project':project, 'images': pagedimages,  'pages':pages, 'page': int(page) }
     if request.user.profile == project.manager:
         return render(request, 'label/managersview-project-images.html', context)
     else:
